@@ -10390,7 +10390,7 @@ function home(){const v=$('view');const days=Object.keys(DAYS).map(Number).sort(
     for(const d of days){const s=DAYS[d];h+=`<button class="sec" data-day="${d}"><span class="num">${d}</span><span><b>${esc(s.s.replace(/^Day \d+ · /,''))}</b><span class="m">${s.g.length} exercises</span></span></button>`}
     h+='</div></div>'}
   if(LIBRARY){h+=`<div class="card"><h2>Reading Library</h2><p class="muted">${META.nlib} extra exercises, from the first notes to sight-reading in any key.</p>`;let cur='';
-    LIBRARY.forEach((s,i)=>{if(s.c!==cur){cur=s.c;h+=`<h3>${esc(cur)}</h3>`}h+=`<button class="sec" data-lib="${i}"><span class="num">${s.c.replace(/\D+/g,'').slice(0,2)}</span><span><b>${esc(s.s)}</b><span class="m">${s.g.length} exercises</span></span></button>`});h+='</div>'}
+    LIBRARY.forEach((s,i)=>{if(s.c!==cur){cur=s.c;h+=`<h3>${esc(cur)}</h3>`}h+=`<button class="sec" data-lib="${i}"><span class="num">${i+1}</span><span><b>${esc(s.s)}</b><span class="m">${s.g.length} exercises</span></span></button>`});h+='</div>'}
   else if(days.length){const k=Math.max(0,LIB_NEED-scannedDays());h+=`<div class="card"><h2>Reading Library</h2><p class="muted">${META.nlib} extra reading exercises, from the first notes to sight-reading in any key. ${k?`Scan ${k} more day${k>1?'s':''} from the book, then the code on the page called <b>The Reading Library</b>.`:'Now scan the code on the page called <b>The Reading Library</b>, near the end of the book.'}</p></div>`}
   v.innerHTML=h;
   v.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>loadText(DEMOS[b.dataset.d]));
