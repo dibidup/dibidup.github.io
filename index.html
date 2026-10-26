@@ -146,7 +146,7 @@ header .wrap{flex-wrap:wrap}
           <p class="desc"><span data-i="b4">x</span></p>
           <div class="meta"><span class="tag on"><span data-i="b11">x</span></span></div>
           <div class="buys"><a class="btn solid buy" href="https://www.amazon.com/dp/B0HP8NTHB8" target="_blank" rel="noopener"><span data-i="b12">x</span></a><a class="btn ghost buy" href="https://www.amazon.co.uk/dp/B0HMX7DY9M" target="_blank" rel="noopener"><span data-i="b13">x</span></a></div><p class="avail"></p></article>
-        <article class="book" data-langs="es"><a class="bcover" href="https://www.amazon.es/dp/B0HNP1JXXF" target="_blank" rel="noopener"><img src="https://m.media-amazon.com/images/I/61Ihk9-COfL._SL800_.jpg" alt="Teoría y armonía moderna para autodidactas – portada" loading="lazy"></a>
+        <article class="book" data-langs="es" data-only="es" hidden><a class="bcover" href="https://www.amazon.es/dp/B0HNP1JXXF" target="_blank" rel="noopener"><img src="https://m.media-amazon.com/images/I/61Ihk9-COfL._SL800_.jpg" alt="Teoría y armonía moderna para autodidactas – portada" loading="lazy"></a>
           <h3><span data-i="b10">Teoría y armonía moderna para autodidactas (Spanish)</span></h3>
           <p class="desc"><span data-i="b7">Volume 1, The Fundamentals: chords, progressions and functions for any instrument, explained step by step for self-taught musicians.</span></p>
           <div class="meta"><span class="tag on"><span data-i="b8">Spanish edition</span></span></div>
@@ -199,6 +199,7 @@ header .wrap{flex-wrap:wrap}
     document.querySelectorAll('.flag').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===l));
     const NOTE={en:'',pt:'Edição em português em preparação.',es:'Edición en español en preparación.',fr:'Édition française en préparation.',de:'Deutsche Ausgabe in Vorbereitung.',it:'Edizione italiana in preparazione.'};
     document.querySelectorAll('.book[data-langs]').forEach(bk=>{const has=bk.dataset.langs.split(' ').includes(l);bk.querySelector('.avail').textContent=''});
+    document.querySelectorAll('.book[data-only]').forEach(bk=>{bk.hidden=bk.dataset.only!==l});
     document.querySelectorAll('a[href^="https://grooves.dibidup.com"]').forEach(a=>a.href='https://grooves.dibidup.com/'+(l==='en'?'':'?lang='+l))};
   let l='en';try{l=localStorage.getItem('dm-lang-choice')||'en'}catch(e){}
   set(l);document.querySelectorAll('.flag').forEach(b=>b.onclick=()=>{set(b.dataset.l);try{localStorage.setItem('dm-lang-choice',b.dataset.l)}catch(e){}})})();
