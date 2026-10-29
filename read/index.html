@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>window.goatcounter={path:function(p){return location.host+p}};function gcEvt(n){try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:n,title:n,event:true})}catch(e){}}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Reading Player</title>
@@ -10257,8 +10258,8 @@ async function handleCode(txt,scanned){
   const {sid,data}=await decode(txt);
   if((sid==='LIB'||sid==='LIBU')){
     if(scannedDays()<LIB_NEED){LS.set('mr-libpending',txt);const k=LIB_NEED-scannedDays();toast('Reading Library code saved. Scan '+k+' more code'+(k>1?'s':'')+' from the days of the book to unlock it.',4200);return}
-    remember(txt,scanned);LIBRARY=data;toast('Reading Library unlocked: '+META.nlib+' exercises');go({v:'home'});return}
-  remember(txt,scanned);DAYS[data.d]=data;if(data.u)US=true;
+    remember(txt,scanned);LIBRARY=data;gcEvt('read: Reading Library unlocked');toast('Reading Library unlocked: '+META.nlib+' exercises');go({v:'home'});return}
+  remember(txt,scanned);DAYS[data.d]=data;gcEvt('read: '+(window.__gcDemo?'sample':'code')+' Day '+data.d+(data.u?' (US)':' (UK)')+(window.__gcDemo?'':(scanned?' · scanned':' · link')));window.__gcDemo=false;if(data.u)US=true;
   const pend=LS.get('mr-libpending',null);
   if(pend&&scannedDays()>=LIB_NEED){try{const r=await decode(pend);LIBRARY=r.data;remember(pend,true);LS.set('mr-libpending',null);toast('Added Day '+data.d+' · Reading Library unlocked!',3600)}catch(e){}}
   else toast('Added: Day '+data.d+' ('+data.g.length+' exercises)');
@@ -10393,7 +10394,7 @@ function home(){const v=$('view');const days=Object.keys(DAYS).map(Number).sort(
     LIBRARY.forEach((s,i)=>{if(s.c!==cur){cur=s.c;h+=`<h3>${esc(cur)}</h3>`}h+=`<button class="sec" data-lib="${i}"><span class="num">${i+1}</span><span><b>${esc(s.s)}</b><span class="m">${s.g.length} exercises</span></span></button>`});h+='</div>'}
   else if(days.length){const k=Math.max(0,LIB_NEED-scannedDays());h+=`<div class="card"><h2>Reading Library</h2><p class="muted">${META.nlib} extra reading exercises, from the first notes to sight-reading in any key. ${k?`Scan ${k} more day${k>1?'s':''} from the book, then the code on the page called <b>The Reading Library</b>.`:'Now scan the code on the page called <b>The Reading Library</b>, near the end of the book.'}</p></div>`}
   v.innerHTML=h;
-  v.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>loadText(DEMOS[b.dataset.d]));
+  v.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{window.__gcDemo=true;loadText(DEMOS[b.dataset.d])});
   v.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>go({v:'day',d:+b.dataset.day}));
   v.querySelectorAll('[data-lib]').forEach(b=>b.onclick=()=>go({v:'lib',i:+b.dataset.lib}))}
 async function renderSheets(title,g,book,d){const v=$('view');
@@ -10427,13 +10428,15 @@ loadAll().then(()=>{if(PENDING)handleCode(PENDING,true).catch(()=>toast('That co
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   const macSafari=/Macintosh/.test(navigator.userAgent)&&/Safari/.test(navigator.userAgent)&&!/Chrome|Chromium|Edg|Firefox/.test(navigator.userAgent)&&!ios;
   if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+  if(standalone())setTimeout(()=>gcEvt('read: opened as installed app'),1500);
   if(standalone()){try{if(ios&&!localStorage.getItem('rp-iosnote')){localStorage.setItem('rp-iosnote','1');setTimeout(()=>{const d=document.createElement('div');d.id='instdlg';d.innerHTML='<div><h3>Scanning on iPhone</h3><p>Scan the book’s codes with the <b>Scan a code</b> button of this app. The iPhone camera opens them in Safari instead, and they won’t appear here. If something you scanned before is missing, just scan it again here.</p><button class="btn" id="instok">OK</button></div>';document.body.appendChild(d);d.onclick=e=>{if(e.target===d||e.target.id==='instok')d.remove()}},1500)}}catch(e){}return}
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();ev=e;btn.hidden=false});
-  window.addEventListener('appinstalled',()=>{btn.hidden=true;try{toast('Installed! Open Reading Player from your home screen.')}catch(e){}});
+  window.addEventListener('appinstalled',()=>{gcEvt('read: app installed');btn.hidden=true;try{toast('Installed! Open Reading Player from your home screen.')}catch(e){}});
   if(ios||macSafari)btn.hidden=false;
   btn.onclick=async()=>{if(ev){ev.prompt();const r=await ev.userChoice;if(r.outcome==='accepted')btn.hidden=true;ev=null;return}
     const d=document.createElement('div');d.id='instdlg';d.innerHTML='<div><h3>Install Reading Player</h3>'+(ios?'<ol><li>Tap the <b>Share</b> button (the square with an arrow) in Safari.</li><li>Choose <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>. The app appears on your home screen.</li></ol><p style="opacity:.8"><b>Important on iPhone and iPad:</b> once installed, open the app and scan the book’s codes with its <b>Scan a code</b> button. Codes scanned with the iPhone camera open in Safari, not in the installed app.</p>':'<ol><li>In Safari, open the <b>File</b> menu (or the Share button).</li><li>Choose <b>Add to Dock</b>.</li></ol>')+'<button class="btn" id="instok">OK</button></div>';
     document.body.appendChild(d);d.onclick=e=>{if(e.target===d||e.target.id==='instok')d.remove()}}})();
 </script>
+<script data-goatcounter="https://dibidup.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
