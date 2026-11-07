@@ -10310,13 +10310,14 @@ let SCANNED=LS.get('mr-scanned',[]);      // codigos leidos con la camara (cuent
 const LIB_NEED=3;
 let DAYS={};        // d -> seccion del libro
 let LIBRARY=null;   // secciones de la biblioteca
-const daySid=t=>{const m=/^MR1:([DU]\d\d)\*/.exec(t||'');return m?m[1]:null};
+const daySid=t=>{const m=/MR1:([DU]\d\d)\*/.exec(t||'');return m?m[1]:null};   // también los guardados como enlace por versiones anteriores
 const scannedDays=()=>new Set(SCANNED.concat(CODES).map(daySid).filter(Boolean)).size;   // días escaneados o abiertos con enlace
 async function loadAll(){
   for(const t of CODES){try{const {sid,data}=await decode(t);if((sid==='LIB'||sid==='LIBU'))LIBRARY=data;else DAYS[data.d]=data;if(data.u)US=true}catch(e){}}
   render()}
 function remember(t,scanned){if(!CODES.includes(t)){CODES.push(t);LS.set('mr-codes',CODES)}if(scanned&&!SCANNED.includes(t)){SCANNED.push(t);LS.set('mr-scanned',SCANNED)}}
 async function handleCode(txt,scanned){
+  txt=(txt||'').trim();if(txt.includes('#')&&!txt.startsWith('MR1:')){try{txt=decodeURIComponent(txt.slice(txt.indexOf('#')+1))}catch(e){}}   // el QR del libro es un enlace: se guarda solo el código
   const {sid,data}=await decode(txt);
   if((sid==='LIB'||sid==='LIBU')){
     if(scannedDays()<LIB_NEED){LS.set('mr-libpending',txt);const k=LIB_NEED-scannedDays();toast('Reading Library code saved. Scan '+k+' more code'+(k>1?'s':'')+' from the days of the book to unlock it.',4200);return}
@@ -10476,6 +10477,97 @@ async function renderSheets(title,g,book,d){const v=$('view');
     el.onclick=()=>{if(CUR===i){PLAY?stop():play()}else{select(i,false);play()}}});
   const drawAll=()=>ITEMS.forEach(x=>{x.g=drawOps(x.el.querySelector('canvas'),x.it)});drawAll();
   let rw=null;window.onresize=()=>{clearTimeout(rw);rw=setTimeout(()=>{if(ITEMS.length){const p=!!PLAY;stop();drawAll();if(p)play()}},150)}}
+window.ACT_CFG = {"book": "read", "store": "mr-codes", "re": "MR1:([A-Z0-9]+)\\*", "open": ["D01", "U01"], "unit": "Day", "aspect": "432/648", "ask": [{"sid": "D06", "ch": 6, "page": 39, "title": "Twinkle in Every Rhythm: Quavers and Rests", "img": "act/uk/p039.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "D07", "ch": 7, "page": 45, "title": "Semiquavers and All the Values Together", "img": "act/uk/p045.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "D08", "ch": 8, "page": 50, "title": "Runs of Three Notes and the Dot", "img": "act/uk/p050.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "D09", "ch": 9, "page": 59, "title": "The C Major Scale", "img": "act/uk/p059.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "D10", "ch": 10, "page": 66, "title": "Sharps and Naturals", "img": "act/uk/p066.jpg", "box": [75.2, 18.5, 12.9, 8.5]}, {"sid": "D11", "ch": 11, "page": 69, "title": "Flats and a Scale from Another Note", "img": "act/uk/p069.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "D12", "ch": 12, "page": 75, "title": "Key Signatures", "img": "act/uk/p075.jpg", "box": [79.3, 18.5, 12.9, 8.5]}, {"sid": "D13", "ch": 13, "page": 81, "title": "Key Signatures: Practice", "img": "act/uk/p081.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "D14", "ch": 14, "page": 84, "title": "Intervals and Famous Tunes", "img": "act/uk/p084.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "D15", "ch": 15, "page": 89, "title": "Ledger Lines and the Octave Sign", "img": "act/uk/p089.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "D16", "ch": 16, "page": 94, "title": "The Bass Clef: Your First Lesson Again", "img": "act/uk/p094.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "D17", "ch": 17, "page": 97, "title": "The Bass Clef: More Notes", "img": "act/uk/p097.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "D18", "ch": 18, "page": 102, "title": "Three Beats in a Bar: 3/4 Time", "img": "act/uk/p102.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "D19", "ch": 19, "page": 107, "title": "Two Big Beats: 6/8 Time", "img": "act/uk/p107.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "D20", "ch": 20, "page": 112, "title": "Repeats, Dynamics and Tempo", "img": "act/uk/p112.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "D21", "ch": 21, "page": 117, "title": "Triplets", "img": "act/uk/p117.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "D22", "ch": 22, "page": 123, "title": "Minor Keys", "img": "act/uk/p123.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "D23", "ch": 23, "page": 126, "title": "Ties and Syncopation", "img": "act/uk/p126.jpg", "box": [75.2, 18.5, 12.9, 8.5]}, {"sid": "D24", "ch": 24, "page": 129, "title": "Pick-up Notes and Short-Long Figures", "img": "act/uk/p129.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "D25", "ch": 25, "page": 133, "title": "Sight-Reading: Your Checklist", "img": "act/uk/p133.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "D26", "ch": 26, "page": 138, "title": "Reading Practice 1: Notes and Steps", "img": "act/uk/p138.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "D27", "ch": 27, "page": 141, "title": "Reading Practice 2: Rhythm", "img": "act/uk/p141.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "D28", "ch": 28, "page": 144, "title": "Reading Practice 3: Scales, Keys and Ledger Lines", "img": "act/uk/p144.jpg", "box": [75.2, 27.4, 12.9, 8.6]}, {"sid": "D29", "ch": 29, "page": 148, "title": "Reading Practice 4: New Time Signatures and Rhythms", "img": "act/uk/p148.jpg", "box": [75.2, 27.4, 12.9, 8.6]}, {"sid": "D30", "ch": 30, "page": 152, "title": "Reading Practice 5: Whole Tunes and New Music", "img": "act/uk/p152.jpg", "box": [75.2, 23.0, 12.9, 8.6]}], "pools": {"U": [{"sid": "U06", "ch": 6, "page": 39, "title": "Twinkle in Every Rhythm: Eighth Notes and Rests", "img": "act/us/p039.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "U07", "ch": 7, "page": 45, "title": "Sixteenth Notes and All the Values Together", "img": "act/us/p045.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "U08", "ch": 8, "page": 50, "title": "Runs of Three Notes and the Dot", "img": "act/us/p050.jpg", "box": [75.3, 23.0, 12.8, 8.6]}, {"sid": "U09", "ch": 9, "page": 59, "title": "The C Major Scale", "img": "act/us/p059.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "U10", "ch": 10, "page": 66, "title": "Sharps and Naturals", "img": "act/us/p066.jpg", "box": [75.2, 18.5, 12.9, 8.5]}, {"sid": "U11", "ch": 11, "page": 69, "title": "Flats and a Scale from Another Note", "img": "act/us/p069.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "U12", "ch": 12, "page": 75, "title": "Key Signatures", "img": "act/us/p075.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "U13", "ch": 13, "page": 81, "title": "Key Signatures: Practice", "img": "act/us/p081.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "U14", "ch": 14, "page": 84, "title": "Intervals and Famous Tunes", "img": "act/us/p084.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "U15", "ch": 15, "page": 89, "title": "Ledger Lines and the Octave Sign", "img": "act/us/p089.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "U16", "ch": 16, "page": 94, "title": "The Bass Clef: Your First Lesson Again", "img": "act/us/p094.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "U17", "ch": 17, "page": 97, "title": "The Bass Clef: More Notes", "img": "act/us/p097.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "U18", "ch": 18, "page": 102, "title": "Three Beats in a Measure: 3/4 Time", "img": "act/us/p102.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "U19", "ch": 19, "page": 107, "title": "Two Big Beats: 6/8 Time", "img": "act/us/p107.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "U20", "ch": 20, "page": 113, "title": "Repeats, Dynamics and Tempo", "img": "act/us/p113.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "U21", "ch": 21, "page": 118, "title": "Triplets", "img": "act/us/p118.jpg", "box": [75.2, 18.5, 12.9, 8.5]}, {"sid": "U22", "ch": 22, "page": 124, "title": "Minor Keys", "img": "act/us/p124.jpg", "box": [75.2, 18.5, 12.9, 8.5]}, {"sid": "U23", "ch": 23, "page": 127, "title": "Ties and Syncopation", "img": "act/us/p127.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "U24", "ch": 24, "page": 131, "title": "Pickup Notes and Short-Long Figures", "img": "act/us/p131.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "U25", "ch": 25, "page": 135, "title": "Sight-Reading: Your Checklist", "img": "act/us/p135.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "U26", "ch": 26, "page": 140, "title": "Reading Practice 1: Notes and Steps", "img": "act/us/p140.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "U27", "ch": 27, "page": 143, "title": "Reading Practice 2: Rhythm", "img": "act/us/p143.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "U28", "ch": 28, "page": 146, "title": "Reading Practice 3: Scales, Keys and Ledger Lines", "img": "act/us/p146.jpg", "box": [75.2, 27.4, 12.9, 8.6]}, {"sid": "U29", "ch": 29, "page": 150, "title": "Reading Practice 4: New Time Signatures and Rhythms", "img": "act/us/p150.jpg", "box": [75.2, 27.4, 12.9, 8.6]}, {"sid": "U30", "ch": 30, "page": 154, "title": "Reading Practice 5: Whole Tunes and New Music", "img": "act/us/p154.jpg", "box": [75.2, 23.0, 12.9, 8.6]}], "D": [{"sid": "D06", "ch": 6, "page": 39, "title": "Twinkle in Every Rhythm: Quavers and Rests", "img": "act/uk/p039.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "D07", "ch": 7, "page": 45, "title": "Semiquavers and All the Values Together", "img": "act/uk/p045.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "D08", "ch": 8, "page": 50, "title": "Runs of Three Notes and the Dot", "img": "act/uk/p050.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "D09", "ch": 9, "page": 59, "title": "The C Major Scale", "img": "act/uk/p059.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "D10", "ch": 10, "page": 66, "title": "Sharps and Naturals", "img": "act/uk/p066.jpg", "box": [75.2, 18.5, 12.9, 8.5]}, {"sid": "D11", "ch": 11, "page": 69, "title": "Flats and a Scale from Another Note", "img": "act/uk/p069.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "D12", "ch": 12, "page": 75, "title": "Key Signatures", "img": "act/uk/p075.jpg", "box": [79.3, 18.5, 12.9, 8.5]}, {"sid": "D13", "ch": 13, "page": 81, "title": "Key Signatures: Practice", "img": "act/uk/p081.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "D14", "ch": 14, "page": 84, "title": "Intervals and Famous Tunes", "img": "act/uk/p084.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "D15", "ch": 15, "page": 89, "title": "Ledger Lines and the Octave Sign", "img": "act/uk/p089.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "D16", "ch": 16, "page": 94, "title": "The Bass Clef: Your First Lesson Again", "img": "act/uk/p094.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "D17", "ch": 17, "page": 97, "title": "The Bass Clef: More Notes", "img": "act/uk/p097.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "D18", "ch": 18, "page": 102, "title": "Three Beats in a Bar: 3/4 Time", "img": "act/uk/p102.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "D19", "ch": 19, "page": 107, "title": "Two Big Beats: 6/8 Time", "img": "act/uk/p107.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "D20", "ch": 20, "page": 112, "title": "Repeats, Dynamics and Tempo", "img": "act/uk/p112.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "D21", "ch": 21, "page": 117, "title": "Triplets", "img": "act/uk/p117.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "D22", "ch": 22, "page": 123, "title": "Minor Keys", "img": "act/uk/p123.jpg", "box": [79.4, 18.5, 12.8, 8.5]}, {"sid": "D23", "ch": 23, "page": 126, "title": "Ties and Syncopation", "img": "act/uk/p126.jpg", "box": [75.2, 18.5, 12.9, 8.5]}, {"sid": "D24", "ch": 24, "page": 129, "title": "Pick-up Notes and Short-Long Figures", "img": "act/uk/p129.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "D25", "ch": 25, "page": 133, "title": "Sight-Reading: Your Checklist", "img": "act/uk/p133.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "D26", "ch": 26, "page": 138, "title": "Reading Practice 1: Notes and Steps", "img": "act/uk/p138.jpg", "box": [75.2, 23.0, 12.9, 8.6]}, {"sid": "D27", "ch": 27, "page": 141, "title": "Reading Practice 2: Rhythm", "img": "act/uk/p141.jpg", "box": [79.4, 23.0, 12.8, 8.6]}, {"sid": "D28", "ch": 28, "page": 144, "title": "Reading Practice 3: Scales, Keys and Ledger Lines", "img": "act/uk/p144.jpg", "box": [75.2, 27.4, 12.9, 8.6]}, {"sid": "D29", "ch": 29, "page": 148, "title": "Reading Practice 4: New Time Signatures and Rhythms", "img": "act/uk/p148.jpg", "box": [75.2, 27.4, 12.9, 8.6]}, {"sid": "D30", "ch": 30, "page": 152, "title": "Reading Practice 5: Whole Tunes and New Music", "img": "act/uk/p152.jpg", "box": [75.2, 23.0, 12.9, 8.6]}]}};
+window.ACT_CFG.pool = sid => (sid[0] === 'U' || sid === 'LIBU') ? 'U' : 'D';   // U01–U30 y LIBU: edición EE. UU.; D01–D30 y LIB: Reino Unido
+
+// ---------------- activación del libro (una sola vez por dispositivo) ----------------
+// El primer código fuera de la muestra no abre nada todavía: la app pide escanear (dentro de la app)
+// el código de una página concreta del libro, elegida al azar entre capítulos que no salen en la
+// vista previa de Amazon. Al escanearlo, se desbloquea todo. Quien ya tenía capítulos guardados
+// se da por activado, así que los clientes actuales no ven nada nuevo.
+(function () {
+  const A = window.ACT_CFG; if (!A) return;
+  const KEY = 'act-' + A.book, LS = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }};
+  const RE = A.re ? new RegExp(A.re) : /(?:PG1|BG1|GG1|UK1|FS1)\.(\w+)\.([\w-]{16,})(?:\.L(\d))?/;
+  const sidOf = t => { let u = t || ''; try { u = decodeURIComponent(u); } catch (e) {} const m = RE.exec(u); return m ? m[1] : null; };
+  let st = LS.get(KEY, null);
+  const free = sid => A.open.includes(sid);
+  if (!st) { let had = false;                                // ¿ya usaba la app con el libro? (códigos guardados que no son de la muestra)
+    try { const v = JSON.parse(localStorage.getItem(A.store) || '{}');
+      had = Array.isArray(v) ? v.some(t => { const s = sidOf(t); return !!s && !free(s); }) : Object.keys(v || {}).length > 0; } catch (e) {}
+    st = {done: had}; LS.set(KEY, st); }
+  let SRC = 'link';                                          // 'scan' solo cuando el código entra por el escáner de la app
+  window.ACT_SCANNED = t => { SRC = 'scan'; return handleCode(t, true); };
+  const fileIn = document.getElementById('cam');
+  if (fileIn) fileIn.addEventListener('change', () => { SRC = 'scan'; }, true);
+  const orig = handleCode;
+  handleCode = async function (txt, ...rest) {
+    const src = SRC; SRC = 'link';
+    const sid = sidOf(txt);
+    if (st.done || !sid || free(sid)) return orig(txt, ...rest);
+    // lectura: la página se pide de la misma edición (EE. UU. / Reino Unido) que el código abierto
+    if (!st.ask) { const pool = (A.pool && A.pools && A.pools[A.pool(sid)]) || A.ask; st.ask = pool[Math.floor(Math.random() * pool.length)]; LS.set(KEY, st); }
+    if (src === 'scan' && sid === st.ask.sid) {              // código pedido, escaneado con el libro delante
+      st.done = true; LS.set(KEY, st); close();
+      const pend = st.pending || []; delete st.pending; LS.set(KEY, st);
+      for (const p of pend) if (sidOf(p) !== sid) { try { await orig(p, true); } catch (e) {} }
+      const ok = await orig(txt, ...rest); toast('Your book is activated. Enjoy!'); return ok;
+    }
+    if (sid !== st.ask.sid || src !== 'scan') { const p = st.pending || []; if (!p.some(x => sidOf(x) === sid)) p.push(txt); st.pending = p.slice(-6); LS.set(KEY, st); }
+    const wrong = src === 'scan' && sid !== st.ask.sid && !!st.shown; st.shown = true; LS.set(KEY, st); show(wrong); return false;
+  };
+  let ov = null;
+  function close() { if (ov) { ov.remove(); ov = null; } }
+  function show(wrong) {
+    close(); const q = st.ask, dir = A.thumbs || 'act/', img = typeof q.img === 'string' ? q.img : q.img !== false ? dir + 'p' + String(q.page).padStart(3, '0') + '.jpg' : '';
+    if (!document.getElementById('act-css')) { const s = document.createElement('style'); s.id = 'act-css';
+      s.textContent =
+        '#act-ov{position:fixed;inset:0;z-index:9998;background:rgba(8,7,6,.86);padding:14px;overflow:auto;display:flex}' +
+        '#act-box{background:var(--panel,#1e1c19);color:var(--fg,#f2eadb);border:1px solid var(--line,#34302a);border-radius:20px;max-width:520px;width:100%;margin:auto;padding:22px 20px 16px;box-shadow:0 20px 60px rgba(0,0,0,.6);font-family:var(--body,system-ui)}' +
+        '#act-box .eb{font:700 12px/1 var(--body,system-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--accent,#c9a25a);text-align:center}' +
+        '#act-box h2{font:700 34px/1 var(--display,system-ui);text-transform:uppercase;letter-spacing:.02em;margin:10px 0 16px;text-align:center}#act-box h2 span{display:block;color:var(--accent,#c9a25a);font-size:64px;line-height:.95;margin-top:2px}' +
+        '#act-wrong{background:#5a1f1a;color:#ffd9d2;border-radius:12px;padding:10px 12px;margin:0 0 14px;font-weight:700;text-align:center}' +
+        '#act-vis{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:center;background:#15130f;border-radius:16px;padding:14px}' +
+        '#act-th{position:relative;border-radius:6px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.5);background:#fff;aspect-ratio:621/810}' +
+        '#act-th img{display:block;width:100%;height:100%}' +
+        '#act-th i{position:absolute;border:3px solid var(--accent,#c9a25a);border-radius:5px;box-shadow:0 0 0 3px rgba(201,162,90,.35);animation:actp 1.4s ease-in-out infinite}' +
+        '#act-th b{position:absolute;background:var(--accent,#c9a25a);color:#121110;font:700 10px/1 var(--body,system-ui);padding:4px 6px;border-radius:5px;white-space:nowrap}' +
+        '@keyframes actp{50%{box-shadow:0 0 0 7px rgba(201,162,90,.15)}}' +
+        '#act-pg small{display:block;color:var(--muted,#8f8676);font-size:14px;line-height:1.3}' +
+        '#act-pg strong{display:block;font:700 34px/1 var(--display,system-ui);color:var(--fg,#f2eadb);text-transform:uppercase;margin:6px 0 4px}#act-pg .tip{margin-top:10px;color:var(--accent,#c9a25a)}' +
+        '#act-steps{list-style:none;margin:16px 0 4px;padding:0;display:grid;gap:10px}' +
+        '#act-steps li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center;font-size:16px;line-height:1.35}' +
+        '#act-steps li span{width:30px;height:30px;border-radius:50%;background:var(--accent,#c9a25a);color:#121110;font-weight:700;display:grid;place-items:center}' +
+        '#act-box .go{display:flex;align-items:center;justify-content:center;gap:10px;font:700 19px/1 var(--body,system-ui);padding:17px;border-radius:14px;border:0;background:var(--accent,#c9a25a);color:#121110;width:100%;margin-top:16px;cursor:pointer}' +
+        '#act-box .go svg{width:24px;height:24px;fill:currentColor}' +
+        '#act-box .lnk{display:block;margin:8px auto 0;background:none;border:0;color:var(--muted,#8f8676);font:500 14px var(--body,system-ui);padding:8px;cursor:pointer}' +
+        '#act-box .help{text-align:center;font-size:13px;color:var(--muted,#8f8676);margin:2px 0 0}' +
+        '@media (max-width:420px){#act-box{padding:18px 14px 12px}#act-vis{grid-template-columns:118px 1fr;gap:12px;padding:12px}#act-pg strong{font-size:28px}#act-box h2{font-size:28px;margin-bottom:12px}#act-box h2 span{font-size:54px}#act-steps li{font-size:15px}}';
+      document.head.appendChild(s); }
+    const B = q.box || (A.boxes || {})[q.page] || [71.7, 16, 11, 8.5], U = A.unit || 'Chapter';
+    const thumb = img ? '<div id="act-th"' + (A.aspect ? ' style="aspect-ratio:' + A.aspect + '"' : '') + '><img src="' + img + '" alt="Page ' + q.page + ' of your book" onerror="this.parentNode.style.display=\'none\'">' +
+      '<i style="left:' + B[0] + '%;top:' + B[1] + '%;width:' + B[2] + '%;height:' + B[3] + '%"></i>' +
+      '<b style="right:' + Math.max(3, 100 - B[0] - B[2]) + '%;top:' + (B[1] + B[3] + 2) + '%">SCAN THIS</b></div>' : '';
+    ov = document.createElement('div'); ov.id = 'act-ov';
+    ov.innerHTML = '<div id="act-box" role="dialog" aria-label="Activate your book">' +
+      '<div class="eb">One-time step · Activate your book</div><h2>Now scan<span>page ' + q.page + '</span></h2>' +
+      (wrong ? '<p id="act-wrong">That is a different code. Look for page ' + q.page + '.</p>' : '') +
+      '<div id="act-vis">' + thumb + '<div id="act-pg"><small>Page ' + q.page + ' is the first page of</small><strong>' + U + ' ' + q.ch + '</strong><small>' + q.title + '</small><small class="tip">The code is at the top, in the gold box.</small></div></div>' +
+      '<ol id="act-steps"><li><span>1</span><div>Open the book at page ' + q.page + '.</div></li>' +
+      '<li><span>2</span><div>Tap <b>Scan the code</b> below.</div></li>' +
+      '<li><span>3</span><div>Point the camera at the code in the gold box. Done: the whole book opens.</div></li></ol>' +
+      '<button type="button" class="go" data-a="scan"><svg viewBox="0 0 24 24"><path d="M9 3 7.2 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>Scan the code</button>' +
+      '<button type="button" class="lnk" data-a="later">Not now</button>' +
+      '<p class="help">Only needed once on this device. Help: hello@dibidup.com</p></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.a === 'later') return close();
+      close(); if (window.camScanOpen) window.camScanOpen(); else if (fileIn) fileIn.click(); });
+  }
+})();
+
 // ---------- inicio
 let PENDING=null;
 (function(){const h=location.hash;let raw='';try{raw=decodeURIComponent(h.slice(1))}catch(e){}
@@ -10500,7 +10592,7 @@ loadAll().then(()=>{if(PENDING)handleCode(PENDING,true).catch(()=>toast('That co
     document.body.appendChild(d);d.onclick=e=>{if(e.target===d||e.target.id==='instok')d.remove()}}})();
 </script>
 <script>
-window.CAMSCAN_CFG = {trigger: '#scanbtn', onCode: async t => { try { await handleCode(t, true); } catch (e) { toast('That code is not from the book.'); } }};
+window.CAMSCAN_CFG = {trigger: '#scanbtn', onCode: async t => { try { await (window.ACT_SCANNED ? window.ACT_SCANNED(t) : handleCode(t, true)); } catch (e) { toast('That code is not from the book.'); } }};
 
 // ---------------- escáner con la cámara del ordenador ----------------
 // En móvil y tableta, «Scan a code» abre la cámara del sistema (foto) como siempre.
