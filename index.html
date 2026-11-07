@@ -221,5 +221,42 @@ header .wrap{flex-wrap:wrap}
     if(i===0||i===4)h+=`<ellipse cx="${x}" cy="50" rx="3.6" ry="2.7" fill="#111"/><line x1="${x-3.4}" y1="50" x2="${x-3.4}" y2="66" stroke="#111" stroke-width=".8"/>`}
   g.innerHTML=h})();
 </script>
+<script>
+// Tienda de Amazon según el país del visitante (como en las apps); la bandera solo cambia el idioma
+(function(){
+function amazonStore() {
+  let tz = '', lang = '';
+  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+  try { lang = (navigator.languages || [navigator.language]).join(',').toLowerCase(); } catch (e) {}
+  const TZ = {'Europe/Madrid': 'es', 'Europe/Lisbon': 'es', 'Atlantic/Madeira': 'es', 'Atlantic/Azores': 'es', 'Atlantic/Canary': 'es', 'Africa/Ceuta': 'es', 'Europe/Berlin': 'de', 'Europe/Vienna': 'de', 'Europe/Zurich': 'de', 'Europe/Busingen': 'de',
+    'Europe/Paris': 'fr', 'Europe/Brussels': 'fr', 'Europe/Luxembourg': 'fr', 'Europe/Monaco': 'fr', 'Europe/Rome': 'it', 'Europe/San_Marino': 'it', 'Europe/Vatican': 'it',
+    'Europe/London': 'uk', 'Europe/Dublin': 'uk', 'Europe/Amsterdam': 'nl', 'Asia/Tokyo': 'jp'};
+  let s = TZ[tz];
+  if (!s && /^Australia\//.test(tz)) s = 'au';
+  if (!s && /^America\/(Toronto|Vancouver|Edmonton|Winnipeg|Halifax|St_Johns|Regina|Montreal|Moncton|Whitehorse|Yellowknife|Iqaluit)$/.test(tz)) s = 'ca';
+  if (!s) { const m = lang.match(/\b(en-gb|en-ie|es-es|de|fr-fr|it|nl-nl|ja)\b/); s = m ? {'en-gb': 'uk', 'en-ie': 'uk', 'es-es': 'es', de: 'de', 'fr-fr': 'fr', it: 'it', 'nl-nl': 'nl', ja: 'jp'}[m[1]] : 'us'; }
+  const DOM = {us: 'amazon.com', uk: 'amazon.co.uk', es: 'amazon.es', de: 'amazon.de', fr: 'amazon.fr', it: 'amazon.it', nl: 'amazon.nl', jp: 'amazon.co.jp', ca: 'amazon.ca', au: 'amazon.com.au'};
+  return {s, dom: DOM[s]};
+}
+  const st = amazonStore(), store = 'Amazon.' + st.dom.slice(7);
+  const US_READ = 'B0HP8NTHB8', UK_READ = 'B0HMX7DY9M';
+  const LAB = {en: d => 'Buy on ' + d, es: d => 'Comprar en ' + d, fr: d => 'Acheter sur ' + d, de: d => 'Bei ' + d + ' kaufen', it: d => 'Acquista su ' + d, pt: d => 'Comprar na ' + d};
+  function apply() {
+    const l = document.documentElement.lang || 'en';
+    document.querySelectorAll('.book a[href*="amazon."]').forEach(a => {
+      if (!a.dataset.asin) { const m = a.href.match(/\/dp\/([A-Z0-9]{10})/); if (!m) return; a.dataset.asin = m[1]; }
+      const asin = a.dataset.asin, read = asin === US_READ || asin === UK_READ;
+      const use = read ? ((st.s === 'us' || st.s === 'ca') ? US_READ : UK_READ) : asin;
+      a.href = 'https://www.' + st.dom + '/dp/' + use;
+      if (!a.classList.contains('buy')) return;
+      if (read && asin !== use) { a.style.display = 'none'; return; }
+      a.style.display = '';
+      (a.querySelector('span') || a).textContent = (LAB[l] || LAB.en)(store);
+    });
+  }
+  apply();
+  document.querySelectorAll('.flag').forEach(b => b.addEventListener('click', () => setTimeout(apply, 0)));
+})();
+</script>
 <script data-goatcounter="https://dibidup.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <script>document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href*="amazon."]');if(a)gcEvt('web: Amazon click '+a.href.replace(/^https:\/\/(www\.)?/,''))},true)</script>
