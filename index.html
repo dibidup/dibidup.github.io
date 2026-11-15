@@ -142,7 +142,12 @@ header .wrap{flex-wrap:wrap}
           <p class="desc"><span data-i="b1">Drum set book: 1,180 grooves and 152 fills in 35+ styles, from rock, funk and jazz to Latin, Afrobeat and world rhythms, beginner to pro. Every groove plays in the free Groove Player app, plus 7,000+ extra grooves.</span></p>
           <div class="meta"><span class="tag on"><span data-i="b2">English edition</span></span></div>
           <div class="buys"><a class="btn solid buy" href="https://www.amazon.com/dp/B0HP8SHVFF" target="_blank" rel="noopener"><span data-i="b3">Buy on Amazon.com</span></a><a class="btn ghost" href="https://grooves.dibidup.com" target="_blank" rel="noopener"><span data-i="p3">Open the app</span></a></div><p class="avail"></p></article>
-        <article class="book" data-langs="en"><a class="bcover" href="https://www.amazon.com/dp/B0HPZWMLG2" target="_blank" rel="noopener"><img src="https://m.media-amazon.com/images/I/71A6UwegwTL._SL800_.jpg" alt="Piano Grooves for Every Style – cover" loading="lazy"></a>
+        <article class="book" data-langs="de" data-only="de" hidden><a class="bcover" href="https://www.amazon.de/dp/B0HRQRRPXP" target="_blank" rel="noopener"><img src="img/piano-de.jpg" alt="Piano-Grooves für jeden Stil – Cover" loading="lazy"></a>
+          <h3>Piano-Grooves für jeden Stil</h3>
+          <p class="desc">Klavierbuch auf Deutsch: 510 Patterns für beide Hände in 16 Stilen, von Pop, Funk und Blues bis Gospel, Jazz und Latin, mit Akkorden, Tonleitern und Arpeggien, vom Einsteiger bis zum Profi. Jedes Pattern erklingt in der kostenlosen Groove-Player-App, dazu 3.464 Extra-Patterns.</p>
+          <div class="meta"><span class="tag on">Deutsche Ausgabe</span></div>
+          <div class="buys"><a class="btn solid buy" href="https://www.amazon.de/dp/B0HRQRRPXP" target="_blank" rel="noopener"><span>Bei Amazon.de kaufen</span></a><a class="btn ghost" href="https://piano.dibidup.com/de/" target="_blank" rel="noopener"><span data-i="p3">App öffnen</span></a></div><p class="avail"></p></article>
+        <article class="book" data-langs="en" data-hide="de"><a class="bcover" href="https://www.amazon.com/dp/B0HPZWMLG2" target="_blank" rel="noopener"><img src="https://m.media-amazon.com/images/I/71A6UwegwTL._SL800_.jpg" alt="Piano Grooves for Every Style – cover" loading="lazy"></a>
           <h3>Piano Grooves for Every Style</h3>
           <p class="desc"><span data-i="p1">x</span></p>
           <div class="meta"><span class="tag on"><span data-i="b2">English edition</span></span></div>
@@ -219,6 +224,7 @@ header .wrap{flex-wrap:wrap}
     const NOTE={en:'',pt:'Edição em português em preparação.',es:'Edición en español en preparación.',fr:'Édition française en préparation.',de:'Deutsche Ausgabe in Vorbereitung.',it:'Edizione italiana in preparazione.'};
     document.querySelectorAll('.book[data-langs]').forEach(bk=>{const has=bk.dataset.langs.split(' ').includes(l);bk.querySelector('.avail').textContent=''});
     document.querySelectorAll('.book[data-only]').forEach(bk=>{bk.hidden=bk.dataset.only!==l});
+    document.querySelectorAll('.book[data-hide]').forEach(bk=>{bk.hidden=bk.dataset.hide.split(' ').includes(l)});
     document.querySelectorAll('a[href^="https://grooves.dibidup.com"]').forEach(a=>a.href='https://grooves.dibidup.com/'+(l==='en'?'':'?lang='+l))};
   let l='en';try{l=localStorage.getItem('dm-lang-choice')||'en'}catch(e){}
   set(l);document.querySelectorAll('.flag').forEach(b=>b.onclick=()=>{set(b.dataset.l);try{localStorage.setItem('dm-lang-choice',b.dataset.l)}catch(e){}})})();
